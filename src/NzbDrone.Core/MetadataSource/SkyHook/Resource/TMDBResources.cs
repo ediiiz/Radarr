@@ -40,6 +40,12 @@ namespace NzbDrone.Core.MetadataSource.SkyHook.Resource
         public string physical_release_note { get; set; }
     }
 
+    public class CreditsResult : MovieResult
+    {
+        public string department { get; set; }
+        public string job { get; set; }
+        public string credit_id { get; set; }
+    }
 
     public class MovieResourceRoot
     {
@@ -192,6 +198,23 @@ namespace NzbDrone.Core.MetadataSource.SkyHook.Resource
         public string iso_639_1 { get; set; }
         public string name { get; set; }
         public object poster_path { get; set; }
+    }
+
+    public class CollectionResponseRoot
+    {
+        public int id { get; set; }
+        public string name { get; set; }
+        public string overview { get; set; }
+        public string poster_path { get; set; }
+        public string backdrop_path { get; set; }
+        public MovieResult[] parts { get; set; }
+    }
+
+    public class PersonCreditsRoot
+    {
+        public CreditsResult[] cast { get; set; }
+        public CreditsResult[] crew { get; set; }
+        public int id { get; set; }
     }
 
     public class Item : MovieResult

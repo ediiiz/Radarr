@@ -10,14 +10,12 @@ namespace NzbDrone.Core.NetImport.TMDb
 {
     public class TMDbParser : IParseNetImportResponse
     {
-        private readonly TMDbSettings _settings;
         private NetImportResponse _importResponse;
         private readonly ISearchForNewMovie _skyhookProxy;
 
-        public TMDbParser(TMDbSettings settings, ISearchForNewMovie skyhookProxy)
+        public TMDbParser(ISearchForNewMovie skyhookProxy)
         {
             _skyhookProxy = skyhookProxy;
-            _settings = settings;
         }
 
         public IList<Movies.Movie> ParseResponse(NetImportResponse importResponse)
@@ -31,48 +29,17 @@ namespace NzbDrone.Core.NetImport.TMDb
                 return movies;
             }
 
-            if (_settings.ListType != (int)TMDbListType.List)
+
+            var jsonResponse = JsonConvert.DeserializeObject<MovieSearchRoot>(_importResponse.Content);
+
+            // no movies were return
+            if (jsonResponse == null)
             {
-                var jsonResponse = JsonConvert.DeserializeObject<MovieSearchRoot>(_importResponse.Content);
-
-                // no movies were return
-                if (jsonResponse == null)
-                {
-                    return movies;
-                }
-
-                return jsonResponse.results.SelectList(_skyhookProxy.MapMovie);
-            }
-            else
-            {
-                var jsonResponse = JsonConvert.DeserializeObject<ListResponseRoot>(_importResponse.Content);
-
-                // no movies were return
-                if (jsonResponse == null)
-                {
-                    return movies;
-                }
-
-                foreach (var movie in jsonResponse.items)
-                {
-                    // Skip non-movie things
-                    if (movie.media_type != "movie")
-                    {
-                        continue;
-                    }
-
-                    // Movies with no Year Fix
-                    if (string.IsNullOrWhiteSpace(movie.release_date))
-                    {
-                        continue;
-                    }
-
-                    movies.AddIfNotNull(_skyhookProxy.MapMovie(movie));
-                }
+                return movies;
             }
 
-
-            return movies;
+            return jsonResponse.results.SelectList(_skyhookProxy.MapMovie);
+            
         }
 
         protected virtual bool PreProcess(NetImportResponse indexerResponse)
