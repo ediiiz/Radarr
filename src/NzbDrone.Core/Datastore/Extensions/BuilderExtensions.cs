@@ -6,7 +6,9 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using Dapper;
+using NLog;
 using NzbDrone.Common.Extensions;
+using NzbDrone.Common.Instrumentation;
 using NzbDrone.Common.Serializer;
 
 namespace NzbDrone.Core.Datastore
@@ -14,6 +16,7 @@ namespace NzbDrone.Core.Datastore
     public static class SqlBuilderExtensions
     {
         public static bool LogSql { get; set; }
+        private static readonly Logger Logger = NzbDroneLogger.GetLogger(typeof(SqlBuilderExtensions));
 
         public static SqlBuilder SelectAll(this SqlBuilder builder)
         {
@@ -41,7 +44,7 @@ namespace NzbDrone.Core.Datastore
 
         public static SqlBuilder.Template LogQuery(this SqlBuilder.Template template)
         {
-            if (LogSql)
+            if (true)
             {
                 var sb = new StringBuilder();
                 sb.AppendLine();
@@ -60,7 +63,7 @@ namespace NzbDrone.Core.Datastore
                 sb.AppendLine("==== End Query Trace ====");
                 sb.AppendLine();
 
-                Trace.Write(sb.ToString());
+                Logger.Trace(sb.ToString());
             }
 
             return template;
