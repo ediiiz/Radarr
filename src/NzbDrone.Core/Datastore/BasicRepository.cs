@@ -92,7 +92,7 @@ namespace NzbDrone.Core.Datastore
 
         protected List<TModel> Query(SqlBuilder builder, Func<SqlBuilder.Template, IEnumerable<TModel>> queryFunc)
         {
-            var sql = builder.AddTemplate(_selectTemplate);
+            var sql = builder.AddTemplate(_selectTemplate).LogQuery();
 
             return queryFunc(sql).ToList();
         }
@@ -420,7 +420,7 @@ namespace NzbDrone.Core.Datastore
             var pagingOffset = (pagingSpec.Page - 1)*pagingSpec.PageSize;
             builder.OrderBy($"{pagingSpec.SortKey} {sortDirection} LIMIT {pagingSpec.PageSize} OFFSET {pagingOffset}");
 
-            var sql = builder.AddTemplate(_selectTemplate);
+            var sql = builder.AddTemplate(_selectTemplate).LogQuery();
 
             return queryFunc(sql).ToList();
         }
@@ -429,7 +429,7 @@ namespace NzbDrone.Core.Datastore
         {
             AddFilters(builder, pagingSpec);
 
-            var sql = builder.AddTemplate(_selectTemplate);
+            var sql = builder.AddTemplate(_selectTemplate).LogQuery();
 
             using (var conn = _database.OpenConnection())
             {

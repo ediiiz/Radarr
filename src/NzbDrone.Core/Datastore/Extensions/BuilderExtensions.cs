@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -44,7 +43,7 @@ namespace NzbDrone.Core.Datastore
 
         public static SqlBuilder.Template LogQuery(this SqlBuilder.Template template)
         {
-            if (true)
+            if (LogSql)
             {
                 var sb = new StringBuilder();
                 sb.AppendLine();
